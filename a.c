@@ -30,11 +30,5 @@ int main()
 		return ERROR;
 	}
 
-	err = pthread_join(tid, NULL); // tid, result of thread
-	if (err != SUCCESS)
-	{
-		printf("main: pthread_join() failed: %s\n", strerror(err));
-		return ERROR;
-	}
-	return 0;
+	pthread_exit(NULL);
 }
