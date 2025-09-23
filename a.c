@@ -11,6 +11,7 @@
 
 void *mythread(void *arg)
 {
+	(void)arg;
 	printf("mythread [%d %d %d]: Hello from mythread!\n", getpid(), getppid(), gettid());
 	return NULL;
 }
