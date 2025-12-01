@@ -10,6 +10,7 @@
 #define SUCCESS 0
 #define ERROR -1
 #define NOT_EQUAL 0
+#define NUM_THREADS 5
 
 int global_var = 100;
 
@@ -24,7 +25,6 @@ void *mythread(void *arg)
     int local_var = 2;
     static int static_local_var = 3;
     const int const_local_var = 4;
-
     printf("mythread [%d %d %d]: Hello from mythread!\n", pid, ppid, tid_from_gettid);
     printf("mythread ID (pthread_self): %lu\n", tid_from_self);
     printf("Thread ID from pthread_create: %lu\n", tid_from_create);
@@ -47,6 +47,7 @@ void *mythread(void *arg)
         printf("gettid() and pthread_create() ID are DIFFERENT\n");
     }
 
+    printf("Addresses:\n");
     printf("  Local variable: %p\n", (void *)&local_var);
     printf("  Static local variable: %p\n", (void *)&static_local_var);
     printf("  Const local variable: %p\n", (void *)&const_local_var);
@@ -57,17 +58,21 @@ void *mythread(void *arg)
 
 int main()
 {
-    pthread_t tid;
+    pthread_t tid[NUM_THREADS];
+    pthread_t *ptr_to_tids = tid;
     int err;
 
     printf("main [%d %d %d]: Hello from main!\n", getpid(), getppid(), gettid());
-
-    err = pthread_create(&tid, NULL, mythread, NULL);
-    if (err != SUCCESS)
+    for (int i = 0; i < NUM_THREADS; i++)
     {
-        printf("main: pthread_create() failed: %s\n", strerror(err));
-        return ERROR;
+        printf("\nThread %d: \n", i);
+        err = pthread_create(&tid[i], NULL, mythread, (void *)&ptr_to_tids[i]);
+        if (err != SUCCESS)
+        {
+            printf("main: pthread_create() failed: %s\n", strerror(err));
+            return ERROR;
+        }
     }
 
-    return 0;
+    pthread_exit(NULL);
 }
