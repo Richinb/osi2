@@ -13,10 +13,7 @@
 void *mythread()
 {
     printf("mythread [%d %d %d]: Hello from mythread!\n", getpid(), getppid(), gettid());
-    int *result = malloc(sizeof(int));
-    *result = 42;
-    printf("Value to return from mythread: %d\n", *result);
-    return (void *)result;
+    return (void *)(long)42;
 }
 
 int main()
@@ -31,14 +28,13 @@ int main()
         return ERROR;
     }
 
-    int *result;
-    err = pthread_join(tid, (void **)&result);
+    void *result_ptr;
+    err = pthread_join(tid, &result_ptr);
     if (err != SUCCESS)
     {
         printf("main: pthread_create() failed: %s\n", strerror(err));
         return ERROR;
     }
-    printf("Value from mythread:%d \n", *result);
-    free(result);
+    printf("Value from mythread:%ld \n", (long)result_ptr);
     return SUCCESS;
 }
